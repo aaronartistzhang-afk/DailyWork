@@ -116,62 +116,14 @@ The hybrid Sonnet+Opus split saves ~60-70% tokens vs. running everything on Opus
 
 ---
 
-## Setup
+## Install
 
-### Prerequisites
+See **[top-level README → 🚀 Install](../../README.md#-install)** for prerequisites, the one-message AI install command, and per-AI manual install instructions.
 
-1. Configure `lark-cli` per [shared/lark-cli-setup.md](../../shared/lark-cli-setup.md)
-2. Create a Lark bot per [shared/bot-app-id.md](../../shared/bot-app-id.md)
-3. Install [Claude Code](https://docs.claude.com/claude-code)
-
-### Recommended: one-message AI install
-
-Open Claude Code, Codex CLI, or any AI agent that can run shell + WebFetch. Paste:
-
-```
-请按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md 装上 meeting-notes skill
-```
-
-The AI auto-detects your environment and picks the right install location, fetches your bot app_id from `lark-cli config show`, validates scopes, and reports.
-
-### Manual install — Claude Code
-
-```bash
-git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
-mkdir -p ~/.claude/skills
-ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
-${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md   # replace <BOT_APP_ID>
-```
-
-### Manual install — Codex CLI
-
-```bash
-git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
-mkdir -p ~/.codex/instructions.d
-cp ~/DailyWork/skills/meeting-notes/SKILL.md ~/.codex/instructions.d/meeting-notes.md
-echo "" >> ~/.codex/instructions.md
-cat ~/.codex/instructions.d/meeting-notes.md >> ~/.codex/instructions.md
-${EDITOR:-nano} ~/.codex/instructions.md   # replace <BOT_APP_ID>
-```
-
-### Manual install — Other AIs (Cursor, Continue, GPT, …)
-
-Open `skills/meeting-notes/SKILL.md` from this repo, copy the entire content, paste into your AI's system prompt / custom instructions / project rules, replace `<BOT_APP_ID>` with your `cli_xxx`. Done.
-
-### Try it
-
+After install, try:
 ```
 总结发给我自己 dry-run, <some Lark meeting URL>
 ```
-
-### Updating
-
-```bash
-cd ~/DailyWork && git pull
-```
-
-- **Claude Code**: symlinks auto-update. Done.
-- **Codex / others**: re-install (re-copy SKILL.md to your install location).
 
 ---
 
