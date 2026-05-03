@@ -124,39 +124,54 @@ The hybrid Sonnet+Opus split saves ~60-70% tokens vs. running everything on Opus
 2. Create a Lark bot per [shared/bot-app-id.md](../../shared/bot-app-id.md)
 3. Install [Claude Code](https://docs.claude.com/claude-code)
 
-### Install the skill (recommended: as a Claude Code Skill)
+### Recommended: one-message AI install
 
-This skill follows the [Claude Code Skills](https://docs.claude.com/en/docs/claude-code/skills) convention and auto-loads when the trigger phrases are detected.
+Open Claude Code, Codex CLI, or any AI agent that can run shell + WebFetch. Paste:
 
-```bash
-# 1. Clone this repo
-git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
-
-# 2. Symlink the skill folder into ~/.claude/skills/
-mkdir -p ~/.claude/skills
-ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
-
-# 3. Edit SKILL.md to set your BOT_APP_ID
-# Replace <BOT_APP_ID> with your cli_xxx from `lark-cli config show`
-${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md
+```
+请按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md 装上 meeting-notes skill
 ```
 
-That's it. Open Claude Code anywhere and try:
+The AI auto-detects your environment and picks the right install location, fetches your bot app_id from `lark-cli config show`, validates scopes, and reports.
+
+### Manual install — Claude Code
+
+```bash
+git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
+mkdir -p ~/.claude/skills
+ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
+${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md   # replace <BOT_APP_ID>
+```
+
+### Manual install — Codex CLI
+
+```bash
+git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
+mkdir -p ~/.codex/instructions.d
+cp ~/DailyWork/skills/meeting-notes/SKILL.md ~/.codex/instructions.d/meeting-notes.md
+echo "" >> ~/.codex/instructions.md
+cat ~/.codex/instructions.d/meeting-notes.md >> ~/.codex/instructions.md
+${EDITOR:-nano} ~/.codex/instructions.md   # replace <BOT_APP_ID>
+```
+
+### Manual install — Other AIs (Cursor, Continue, GPT, …)
+
+Open `skills/meeting-notes/SKILL.md` from this repo, copy the entire content, paste into your AI's system prompt / custom instructions / project rules, replace `<BOT_APP_ID>` with your `cli_xxx`. Done.
+
+### Try it
+
 ```
 总结发给我自己 dry-run, <some Lark meeting URL>
 ```
-
-### Alternative installs
-
-- **Per-project**: copy `SKILL.md` content to your project's `./CLAUDE.md` for project-scoped use
-- **One-shot**: paste `SKILL.md` content into Claude Code as the first message; active for that session only
 
 ### Updating
 
 ```bash
 cd ~/DailyWork && git pull
-# Symlinks pick up changes automatically; only re-edit if BOT_APP_ID got reverted
 ```
+
+- **Claude Code**: symlinks auto-update. Done.
+- **Codex / others**: re-install (re-copy SKILL.md to your install location).
 
 ---
 
