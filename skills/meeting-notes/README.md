@@ -118,12 +118,45 @@ The hybrid Sonnet+Opus split saves ~60-70% tokens vs. running everything on Opus
 
 ## Setup
 
+### Prerequisites
+
 1. Configure `lark-cli` per [shared/lark-cli-setup.md](../../shared/lark-cli-setup.md)
 2. Create a Lark bot per [shared/bot-app-id.md](../../shared/bot-app-id.md)
-3. Open your AI agent (recommended: [Claude Code](https://docs.claude.com/claude-code))
-4. Paste the contents of [`SKILL.md`](SKILL.md) into the conversation
-5. **Replace `<BOT_APP_ID>` in the prompt with your actual bot app_id** (`cli_xxxxxxxxxxxx`)
-6. Send a test trigger like `"总结发给我自己 dry-run, <some Lark meeting URL>"`
+3. Install [Claude Code](https://docs.claude.com/claude-code)
+
+### Install the skill (recommended: as a Claude Code Skill)
+
+This skill follows the [Claude Code Skills](https://docs.claude.com/en/docs/claude-code/skills) convention and auto-loads when the trigger phrases are detected.
+
+```bash
+# 1. Clone this repo
+git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
+
+# 2. Symlink the skill folder into ~/.claude/skills/
+mkdir -p ~/.claude/skills
+ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
+
+# 3. Edit SKILL.md to set your BOT_APP_ID
+# Replace <BOT_APP_ID> with your cli_xxx from `lark-cli config show`
+${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md
+```
+
+That's it. Open Claude Code anywhere and try:
+```
+总结发给我自己 dry-run, <some Lark meeting URL>
+```
+
+### Alternative installs
+
+- **Per-project**: copy `SKILL.md` content to your project's `./CLAUDE.md` for project-scoped use
+- **One-shot**: paste `SKILL.md` content into Claude Code as the first message; active for that session only
+
+### Updating
+
+```bash
+cd ~/DailyWork && git pull
+# Symlinks pick up changes automatically; only re-edit if BOT_APP_ID got reverted
+```
 
 ---
 

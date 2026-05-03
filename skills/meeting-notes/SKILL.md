@@ -1,10 +1,15 @@
+---
+name: meeting-notes
+description: 飞书/Lark 妙记 URL → 精炼会议纪要带 @ 责任人 → 发到群或 DM。当用户提到"总结会议纪要 / 总结妙记 / meeting notes / 飞书会议总结 / 妙记总结 / minute summary / 发到群" 等触发词，且消息里包含 https://*.larkoffice.com/minutes/ 或 https://*.feishu.cn/minutes/ URL 时使用。支持中文/英文/双语三种输出，支持 dry-run 预览，支持 P2P 自送。
+---
+
 # Meeting Notes Hybrid Skill — for Claude Code
 
-> Paste this entire file (from this line down) into your Claude Code conversation as the first message. The AI will then have this skill.
+> **Install (one-time)**: place this file at `~/.claude/skills/meeting-notes/SKILL.md` (alongside `worker1_prompt.md` and `worker2_prompt.md`). Then replace `<BOT_APP_ID>` below with your actual Lark bot app_id (`cli_xxxxxxxxxxxx`, get it via `lark-cli config show`).
 >
-> **Before you paste**: replace `<BOT_APP_ID>` (appears once below) with your actual Lark bot app_id (format `cli_xxxxxxxxxxxx`). Get it via `lark-cli config show`.
+> **Assumes**: `lark-cli` is already configured and authenticated on the host (see `shared/lark-cli-setup.md` in this repo).
 >
-> **Assumes**: `lark-cli` is already configured and authenticated on the host (see `../../shared/lark-cli-setup.md`).
+> **Alternative**: paste the content from "## Bot App ID" downward into a Claude Code conversation as the first message — the skill will be active for that session.
 
 ---
 
