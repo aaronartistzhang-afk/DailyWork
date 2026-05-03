@@ -33,7 +33,24 @@ Required:
 If `lark-cli` is missing, tell the user:
 > ⚠️ 没装 lark-cli。先按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/shared/lark-cli-setup.md 装好再回来。
 
-If `lark-cli` is installed but not authenticated, run `lark-cli config show` — if it errors with no profile, tell the user:
+If `lark-cli` is installed, check authentication. **`lark-cli config show` exits 0 even when not configured**, so you must inspect the JSON body:
+
+```bash
+lark-cli config show 2>&1 | python3 -c "
+import sys, json
+raw = sys.stdin.read()
+i = raw.find('{')
+d = json.loads(raw[i:]) if i >= 0 else {}
+if d.get('ok') is False:
+    print('UNAUTHED:', d.get('error', {}).get('message', 'unknown'))
+elif d.get('appId'):
+    print('AUTHED:', d['appId'])
+else:
+    print('UNKNOWN:', raw[:200])
+"
+```
+
+If output starts with `UNAUTHED:` → tell the user:
 > ⚠️ lark-cli 没登录。请先跑 `lark-cli config init` + `lark-cli auth login` 再回来。
 
 Don't proceed past Step 1 until prerequisites pass.
@@ -130,6 +147,41 @@ If yes:
 ```bash
 cd ~/DailyWork && git update-index --skip-worktree skills/$SKILL_NAME/SKILL.md
 ```
+
+## Step 5.5 — Sanity-check bot scopes (catch problems before runtime)
+
+The bot may have the right `app_id` but be missing required Lark API scopes. Catch this here, not at first skill use.
+
+For `meeting-notes`, probe each required API once with the smallest possible call:
+
+```bash
+echo "=== Scope probe for meeting-notes ==="
+TODAY=$(date -u +%Y-%m-%d)
+
+# vc:meeting:read (search uses meeting list API)
+echo -n "vc:meeting:read: "
+lark-cli vc +search --query "ping" --start "$TODAY" --end "$TODAY" --as user 2>&1 \
+  | grep -oE 'missing required scope[^"]*|"ok": ?true|"code": ?0' | head -1
+
+# contact:user:readonly
+echo -n "contact:user:readonly: "
+lark-cli contact +get-user --as user 2>&1 \
+  | grep -oE 'missing required scope[^"]*|"ok": ?true|"code": ?0' | head -1
+
+# im:chat (cheap call)
+echo -n "im:chat / im:message: "
+lark-cli im chat.members get --params '{"chat_id":"oc_invalid","member_id_type":"open_id"}' --as bot 2>&1 \
+  | grep -oE 'missing required scope[^"]*|invalid.*chat_id|HTTP 400' | head -1
+# (we expect "invalid chat_id" — that means scope works; "missing required scope" means it doesn't)
+```
+
+For each line that contains `missing required scope`, parse the scope name(s) and tell the user:
+> ⚠️ Bot 缺少 scope：`<scope>`。
+> 去 https://open.feishu.cn → 你的应用 → 权限管理 → 添加 → 重新发布版本 → 然后回来重跑。
+
+If all probes pass → continue.
+
+If any probe fails → don't claim "install successful" in Step 6; instead say "skill files 已就位，但 bot scope 还缺，按上面提示补完后即可使用".
 
 ## Step 6 — Verify install
 
