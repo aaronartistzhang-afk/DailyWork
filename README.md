@@ -15,25 +15,27 @@
 
 ---
 
-## 🚀 Quick Start (Claude Code) — One-message install
+## 🚀 Quick Start — One-message install
 
 > **Pre-requisite (one-time, ~10 min)**: install `lark-cli` and create a Lark bot. See [INSTALL.md](INSTALL.md).
 
-Open Claude Code anywhere and **paste this single message**:
+Open your AI agent (Claude Code, Codex CLI, Cursor, etc.) and **paste this single message**:
 
 ```
 请按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md 装上 meeting-notes skill
 ```
 
-Claude will:
+The AI will:
 1. Fetch the install instructions
 2. Check prerequisites (`git`, `lark-cli`)
-3. Clone the repo to `~/DailyWork`
-4. Symlink the skill into `~/.claude/skills/meeting-notes/`
-5. Auto-detect your bot app_id from `lark-cli config show` (or ask if needed)
-6. Verify the install and tell you how to use it
+3. **Detect which AI agent it is** (Claude Code / Codex / other) and pick the right install location
+4. Clone the repo to `~/DailyWork`
+5. Install the skill (symlink for Claude Code, copy+merge for Codex, paste-instructions for others)
+6. Auto-detect your bot app_id from `lark-cli config show` (or ask if needed)
+7. Sanity-check that the bot has the required Lark API scopes
+8. Verify the install and tell you how to use it
 
-That's it. After install, in any new Claude Code session, just say:
+After install, in any new session, just say:
 
 ```
 总结发给我自己 dry-run, <some Lark meeting URL>
@@ -45,7 +47,15 @@ That's it. After install, in any new Claude Code session, just say:
 请按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md 装上 <skill-name>
 ```
 
-### Manual install (if you prefer)
+### Supported AI agents
+
+| AI agent | Install target | Auto-trigger |
+|---|---|---|
+| **Claude Code** | `~/.claude/skills/<name>/` (symlink) | ✅ via SKILL.md frontmatter |
+| **Codex CLI** | `~/.codex/instructions.d/<name>.md` (copy) + appended to `~/.codex/instructions.md` | Always loaded each session |
+| **Cursor / Continue / GPT custom action / others** | Paste SKILL.md content into AI's system prompt manually | Manual paste per session |
+
+### Manual install (Claude Code, if you prefer)
 
 ```bash
 git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
@@ -54,17 +64,24 @@ ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
 ${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md   # set BOT_APP_ID
 ```
 
+### Manual install (Codex)
+
+```bash
+git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
+mkdir -p ~/.codex/instructions.d
+cp ~/DailyWork/skills/meeting-notes/SKILL.md ~/.codex/instructions.d/meeting-notes.md
+echo "" >> ~/.codex/instructions.md
+cat ~/.codex/instructions.d/meeting-notes.md >> ~/.codex/instructions.md
+${EDITOR:-nano} ~/.codex/instructions.md   # set BOT_APP_ID
+```
+
 ### Updating
 
 ```bash
 cd ~/DailyWork && git pull
 ```
 
-Symlinks auto-point to the latest version.
-
-### Other AI agents (non-Claude-Code)
-
-The skills also work with Cursor, Continue.dev, GPT custom actions, etc. Just paste the contents of a skill's `SKILL.md` as the system prompt / custom instructions. See each skill's `README.md` for details.
+Claude Code: symlink auto-points to the latest. Codex: re-run the install (or just say "重装 meeting-notes" to your Codex agent).
 
 ---
 
