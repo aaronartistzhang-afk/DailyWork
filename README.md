@@ -15,13 +15,32 @@
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Claude Code)
 
-1. **First-time setup** — see [INSTALL.md](INSTALL.md) for `lark-cli` installation and Lark bot configuration (one-time, ~10 min).
-2. **Pick a skill** from the catalog above and open its folder.
-3. **Read its `README.md`** to understand what it does and how to invoke it.
-4. **Copy its `SKILL.md`** into your AI agent's system prompt / custom instructions.
-5. **Try it**: send a trigger message to your AI as described in the skill README.
+```bash
+# 1. One-time prerequisites: install lark-cli + create Lark bot
+#    See INSTALL.md for details (~10 min setup)
+
+# 2. Clone this repo
+git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
+
+# 3. Symlink any skill you want into Claude Code's skills directory
+mkdir -p ~/.claude/skills
+ln -s ~/DailyWork/skills/meeting-notes ~/.claude/skills/meeting-notes
+#   (repeat for other skills as they ship)
+
+# 4. Edit each skill's SKILL.md to fill in your BOT_APP_ID
+${EDITOR:-nano} ~/.claude/skills/meeting-notes/SKILL.md
+
+# 5. Open Claude Code in any directory, trigger the skill via natural language
+#    e.g., "总结发给我自己 dry-run, <Lark meeting URL>"
+```
+
+Each skill is self-contained — symlink only what you need.
+
+### Other AI agents
+
+The skills also work with Cursor, Continue.dev, GPT custom actions, etc. Just paste the `SKILL.md` content as the system prompt / custom instructions. See each skill's `README.md` for details.
 
 ---
 
