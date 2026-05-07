@@ -179,6 +179,7 @@ Read the raw JSON. Apply these judgments and write `/tmp/opus_judgment_<token>.j
 
 - Look for explicit ownership signals: `"我去整理 X"` / `"辛苦你做 X"` / `"X 后续 follow up"` / `"I'll take care of X"`.
 - Match owner names to attendees from Phase 1. Use their open_ids if `in_target_group=true`; otherwise null (will render as plain text).
+- ⚠️ **"是否列入 Todo" 与 "如何 @" 是两件事**：don't drop a real action item just because the owner isn't in the target group. Cross-region DA / external stakeholder / absent owners (someone on leave who got assigned by colleagues) should all appear in `todos[]`. Their `owner_open_ids` will be `null`, and the renderer will produce plain text `@<name>` instead of an `at` tag. The original people in the meeting still need to see who owns what.
 
 ### Highlight (⚠️) flag
 
