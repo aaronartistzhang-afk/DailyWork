@@ -1,0 +1,16 @@
+{
+  "name": "group-discussion-reviewer",
+  "version": "1.0.0",
+  "description": "Simulate a product group-discussion PRD review: multi-reviewer pipeline with disciplined P0 gating and a two-axis verdict (group admission / simulated review result).",
+  "type": "module",
+  "bin": {
+    "review-prd": "bin/review-prd.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,211 @@
+[
+  {
+    "caseId": "metric-definition-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "活动中心 DAU 增长口径、活动后留存和叠加 AB 实验剔除方式是什么？",
+      "severityReason": "如果口径不清，无法判断活动是否真的带来增长。",
+      "recommendedRevision": "补充大盘指标、活动期 AA 增长、活动后留存和叠加实验剔除规则。"
+    }
+  },
+  {
+    "caseId": "technical-sla-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "delivery_viability_failure",
+      "question": "实时生成服务的 QPS、延迟 SLA、告警阈值和 on-call runbook 是否明确？",
+      "severityReason": "这些技术配置缺失会影响服务稳定性。",
+      "recommendedRevision": "补充 QPS、延迟、超时重试、监控告警、on-call 和 runbook。"
+    }
+  },
+  {
+    "caseId": "monitoring-runbook-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "谁负责实时监控与告警？缺少关键看板、SOT、告警阈值与值班/应急流程。",
+      "severityReason": "无明确监控/告警与责任会影响灰度放量、归因与上线决策。",
+      "recommendedRevision": "补充监控章：定义单一事实来源、必备看板、刷新频率、告警阈值、on-call 人员与 runbook。"
+    }
+  },
+  {
+    "caseId": "legal-tns-launch-gate",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "法务/内容安全与跨境部署审批（Legal Ticket、TnS SLA）是否已完成？",
+      "severityReason": "没有 Legal 与 TnS 审批结论会导致上线门禁缺失。",
+      "recommendedRevision": "补充 Legal Ticket 状态、TnS SLA、跨境托管审查结果与负责人。"
+    }
+  },
+  {
+    "caseId": "unsafe-ai-user-touch",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "AI 文案是否有人审与合规门禁，避免不当内容直接触达主播？",
+      "severityReason": "没有人工审核与合规门禁会导致不安全内容上线触达用户。",
+      "recommendedRevision": "补充人工审核、合规审批、违规内容拦截和回滚机制。"
+    }
+  },
+  {
+    "caseId": "big-picture-aa-retention-goal-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "如果目标改为看大盘维稳、AA 增长和活动结束后持续留存，当前口径如何定义并剔除同期叠加 AB 的影响？",
+      "severityReason": "没有大盘口径、AA 增长和活动后留存定义，无法判断产品动作是否真的有效。",
+      "recommendedRevision": "补充大盘指标、AA 增长、活动结束后留存窗口、叠加实验影响剔除方法和数据负责人。"
+    }
+  },
+  {
+    "caseId": "significance-only-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "AB 实验的样本量、显著性水平和 MDE 是否明确？",
+      "severityReason": "没有这些统计参数会影响实验分析。",
+      "recommendedRevision": "补充样本量、显著性水平、MDE 和功效分析。"
+    }
+  },
+  {
+    "caseId": "tracking-schema-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "完整埋点规范是否明确，包括曝光、点击、订阅、toast 事件清单、属性和目标表？",
+      "severityReason": "缺少事件清单、属性和目标表会影响数据验收，但不等于核心业务口径缺失。",
+      "recommendedRevision": "补充事件名、触发时机、必填属性、目标表、owner、验收 SQL 和异常监控。"
+    }
+  },
+  {
+    "caseId": "sql-data-table-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "SQL 样例、数据表、字段映射、刷新频率、owner 和验收样例是否明确？",
+      "severityReason": "缺少数据表交付细节会影响后续数仓验收，但不等于核心业务指标口径缺失。",
+      "recommendedRevision": "补充源表/目标表、字段映射、示例 SQL、刷新频率、owner 和验收样例。"
+    }
+  },
+  {
+    "caseId": "api-joint-debugging-readiness-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "delivery_viability_failure",
+      "question": "API 接口联调、测试凭证、渠道权限、联调 owner 和 fallback 状态是否明确？",
+      "severityReason": "这些 readiness 信息影响交付排期，但缺少材料尚不能证明唯一上线链路已阻塞。",
+      "recommendedRevision": "补充 API 联调状态、测试凭证、权限、owner、排期和 fallback。"
+    }
+  },
+  {
+    "caseId": "formal-experiment-decision-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "measurement_failure",
+      "question": "正式 AB 放量决策缺少主指标、随机化单位、污染处理和归因窗口，怎么判断是否替代旧策略？",
+      "severityReason": "实验结论作为放量门槛，但缺少分流和归因口径会让成败无法解释。",
+      "recommendedRevision": "补充 primary metric、随机化单位、污染处理、归因窗口和放量门槛。"
+    }
+  },
+  {
+    "caseId": "traffic-resource-exception-without-guardrail-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "strategic_failure",
+      "question": "申请额外流量、排序优先级或活动中心资源位时，接受这个例外的业务护栏是什么？",
+      "severityReason": "没有收益、负向影响和退出规则，无法判断资源例外是否合理。",
+      "recommendedRevision": "补充资源例外准入条件、收益目标、核心 guardrail、退出规则和 owner。"
+    }
+  },
+  {
+    "caseId": "badge-info-standard-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "delivery_viability_failure",
+      "question": "权益 badge 的信息标准、ICON 尺寸、展示文案和埋点字段是否统一？",
+      "severityReason": "信息标准不清会影响运营理解和后续复盘。",
+      "recommendedRevision": "补充 badge 信息标准、ICON 尺寸、文案规范、埋点字段和示例。"
+    }
+  },
+  {
+    "caseId": "sot-dashboard-refresh-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "SOT 看板刷新频率、告警阈值、值班人和 runbook 是否明确？",
+      "severityReason": "缺少这些运维信息会影响上线后的问题定位效率。",
+      "recommendedRevision": "补充 SOT 看板、刷新频率、告警阈值、on-call 和 runbook。"
+    }
+  },
+  {
+    "caseId": "0528-promo-container-sort-input-validation-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "delivery_viability_failure",
+      "question": "C端容器要求、排序逻辑、提交字段和输入强校验是否明确？",
+      "severityReason": "这些信息会影响资源位接入和字段提交验收，但属于通过后的 Todo 补充。",
+      "recommendedRevision": "补充 C 端容器要求、排序字段、接口提交字段、输入校验 owner、验收标准和排期。"
+    }
+  },
+  {
+    "caseId": "0528-release-rollout-rollback-owner-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "发布范围、灰度分阶段计划、回滚触发条件和责任人是否明确？",
+      "severityReason": "PRD 标注 ASAP，但未给出灰度步骤和回滚 owner，存在上线管理风险。",
+      "recommendedRevision": "补充首发范围、灰度步骤、观测窗口、回滚阈值和责任人。"
+    }
+  },
+  {
+    "caseId": "0528-tw-ranking-launch-material-interface-readiness-followup",
+    "expectedSeverity": "P1",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "delivery_viability_failure",
+      "question": "最终上线日期、关键素材交付责任、接口验收与回退机制是否统一锁定？",
+      "severityReason": "缺少上线日期、素材 owner、接口 owner 和验收安排会影响排期管理，但尚未证明核心 MIX 规则不可交付。",
+      "recommendedRevision": "补充上线日期、素材/接口 owner、验收标准和回退方案。"
+    }
+  },
+  {
+    "caseId": "0528-popup-trigger-frequency-exit-strategy-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "direction_failure",
+      "question": "首次进入活动中心就弹窗、每 30 天触达和累计 3 次退出策略之间的业务逻辑是什么？",
+      "severityReason": "触发时机没有绑定用户看到活动价值的场景，且 30 天品控与 3 次永久退出逻辑冲突，无法判断方案是否合理。",
+      "recommendedRevision": "重写弹窗触发策略：基于浏览 banner、reward、signup 等价值感知行为触发，并明确频控与退出规则。"
+    }
+  },
+  {
+    "caseId": "user-facing-fallback-rollback-blocker",
+    "expectedSeverity": "P0",
+    "issue": {
+      "severity": "P0",
+      "p0Category": "launch_safety_failure",
+      "question": "如果活动入口或推荐策略对主播全量触达后效果异常，是否有用户侧 fallback、停止触达和回滚机制？",
+      "severityReason": "缺少用户侧 fallback 和回滚会让错误策略直接影响主播体验且不可控。",
+      "recommendedRevision": "补充触达停止条件、fallback 文案/入口、灰度回滚、影响面评估和人工兜底流程。"
+    }
+  }
+]
