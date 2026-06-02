@@ -11,7 +11,8 @@
 | Skill | What it does | Stack | Required scopes |
 |---|---|---|---|
 | [meeting-notes](skills/meeting-notes/) | 飞书妙记 URL → 精炼会议纪要 + 自动 @ 责任人 → 发到群/DM | Lark CLI · Sonnet+Opus hybrid | `vc:meeting:read` `vc:minute:read` `contact:user:readonly` `im:message.send_as_app` `im:chat.members` |
-| _(more coming)_ | | | |
+| [group-discussion-reviewer](skills/group-discussion-reviewer/) | 模拟产品组会评审一份 PRD：多评审员流水线 + 严格 P0 门禁 → 双轴结论（组内准入 / 模拟评审结果）+ P0/P1/P2。高保真可运行引擎 | Node ≥20 · zero deps | An OpenAI-compatible API key |
+| [group-discussion-reviewer-methodology](skills/group-discussion-reviewer-methodology/) | 同款评审方法论，在对话里直接评审 PRD，无需 key、无需运行代码 | Pure prompt | None |
 
 ---
 
