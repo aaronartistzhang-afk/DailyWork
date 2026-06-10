@@ -13,12 +13,16 @@
 | [meeting-notes](skills/meeting-notes/) | 飞书妙记 URL → 精炼会议纪要 + 自动 @ 责任人 → 发到群/DM | Lark CLI · Sonnet+Opus hybrid | `vc:meeting:read` `vc:minute:read` `contact:user:readonly` `im:message.send_as_app` `im:chat.members` |
 | [group-discussion-reviewer](skills/group-discussion-reviewer/) | 模拟产品组会评审一份 PRD：多评审员流水线 + 严格 P0 门禁 → 双轴结论（组内准入 / 模拟评审结果）+ P0/P1/P2。高保真可运行引擎 | Node ≥20 · zero deps | An OpenAI-compatible API key |
 | [group-discussion-reviewer-methodology](skills/group-discussion-reviewer-methodology/) | 同款评审方法论，在对话里直接评审 PRD，无需 key、无需运行代码 | Pure prompt | None |
+| [metric-change-attribution](skills/metric-change-attribution/) | 指标 WoW/MoM 变化归因：排名哪些 segment 驱动了 rate/total 变化，逐层下钻到根因（解释度/ep + factor split + turnover） | Python 3 · pandas · PyYAML | none (no Lark) |
+| _(more coming)_ | | | |
 
 ---
 
 ## 🚀 Install
 
 ### Prerequisites (one-time, ~10 min)
+
+> **Python-only skills** (e.g. [`metric-change-attribution`](skills/metric-change-attribution/)) skip steps 1–2 entirely — no Lark, no bot. They just need **Python 3** + `pip install pandas pyyaml`, plus an AI agent (step 3). The Lark prerequisites below apply only to the Lark-backed skills.
 
 1. **`lark-cli`** installed and authenticated — see [shared/lark-cli-setup.md](shared/lark-cli-setup.md). Verify:
    ```bash

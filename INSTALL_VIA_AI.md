@@ -10,13 +10,38 @@
 
 Look at the user's message:
 
-- If they named a skill (e.g., `meeting-notes`) → use that
+- If they named a skill (e.g., `meeting-notes`, `metric-change-attribution`) → use that
 - If they said "all" / "全部" → install all skills under `skills/`
-- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes（更多陆续会加）。"*
+- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes、metric-change-attribution（更多陆续会加）。"*
 
 Set `SKILL_NAME` for use below.
 
+**Skill class** — this determines which steps apply:
+- **Lark skills** (e.g. `meeting-notes`) — need `lark-cli` + a bot `BOT_APP_ID` + Lark scopes. All steps apply.
+- **Python-only skills** (e.g. `metric-change-attribution`) — pure Python, **no Lark / bot / scopes**. Need `python3` + `pandas` + `pyyaml`. **Skip Steps 5 and 5.5 entirely** (no BOT_APP_ID, no scope probe); use the Python branches in Steps 1 and 6.
+
+Set `SKILL_CLASS` = `lark` or `python` accordingly.
+
 ## Step 1 — Check prerequisites
+
+### 1-python — `SKILL_CLASS=python` (e.g. `metric-change-attribution`)
+
+Run silently and report only failures:
+
+```bash
+which git python3 2>&1
+python3 -c "import pandas, yaml; print('deps ok')" 2>&1
+```
+
+Required:
+- **git** — to clone the repo
+- **python3** — to run the engine
+- **pandas** + **pyyaml** — if the import line fails, tell the user:
+  > ⚠️ 缺 Python 依赖。跑一下 `pip install pandas pyyaml`（或 `python3 -m pip install pandas pyyaml`）再回来。
+
+No `lark-cli`, no bot, no scopes for this skill. When deps pass, **skip to Step 2** (and later skip Steps 5 / 5.5).
+
+### 1-lark — `SKILL_CLASS=lark` (e.g. `meeting-notes`)
 
 Run silently and report only failures:
 
@@ -26,7 +51,7 @@ which git lark-cli 2>&1
 
 Required:
 - **git** — to clone the repo
-- **lark-cli** — required for any skill that talks to Lark (most of them)
+- **lark-cli** — required for any skill that talks to Lark
 
 If `lark-cli` is missing, tell the user:
 > ⚠️ 没装 lark-cli。先按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/shared/lark-cli-setup.md 装好再回来。
@@ -172,6 +197,8 @@ For 4-C, skip Steps 5c, 5.5, 6 (we can't patch a file the user manages manually)
 
 ## Step 5 — Configure BOT_APP_ID (auto-detect first, ask only if needed)
 
+> **`SKILL_CLASS=python` → skip this entire step** (no BOT_APP_ID). Go straight to Step 6.
+
 The skill content contains a placeholder `<BOT_APP_ID>` that must be replaced with the user's actual Lark bot app_id.
 
 ### 5a. Try auto-detect
@@ -229,6 +256,8 @@ For `AI_ENV=codex`: not relevant (the install is a copy, not a symlink — `git 
 
 ## Step 5.5 — Sanity-check bot scopes (catch problems before runtime)
 
+> **`SKILL_CLASS=python` → skip this entire step** (no Lark scopes).
+
 The bot may have the right `app_id` but be missing required Lark API scopes. Catch this here, not at first skill use.
 
 For `meeting-notes`, probe each required API once with the smallest possible call:
@@ -260,7 +289,14 @@ If any probe fails → don't claim "install successful" in Step 6; say "skill fi
 
 ## Step 6 — Verify install
 
-Different per env:
+**`SKILL_CLASS=python` (e.g. `metric-change-attribution`)** — verify the engine runs, independent of AI env:
+```bash
+cd ~/.claude/skills/$SKILL_NAME 2>/dev/null || cd ~/DailyWork/skills/$SKILL_NAME
+python3 scripts/selftest.py     # → should end with "ALL PASSED"
+```
+If it prints `ALL PASSED`, you're done — the skill auto-triggers on 归因 / "why did X change" / WoW-MoM keywords. Tell the user to try: *"为什么这周触达率掉了？帮我归因 —— 数据在 data.csv"*. (Skip the Lark per-env checks below.)
+
+For Lark skills, verify per env:
 
 **`AI_ENV=claude-code`**:
 ```bash

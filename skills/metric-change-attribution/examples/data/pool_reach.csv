@@ -1,0 +1,11 @@
+p_date,operation_region_code,资源Position,activity_id,activity_show_name,资源曝光uv,活动圈人uv,资源和活动圈人交集uv
+P1,R1,push,100001,Spring Battle 5.10-5.16,120,1500,300
+P2,R1,push,100001,Spring Battle 5.10-5.16,0,1500,0
+P1,R1,push,100002,Quest Ladder 5.12-5.18,60,1200,150
+P2,R1,push,100002,Quest Ladder 5.12-5.18,1,1200,2
+P1,R1,push,100003,Creator Showcase 5.15-6.01,140,2000,360
+P2,R1,push,100003,Creator Showcase 5.15-6.01,50,2100,120
+P1,R1,push,100004,Summer Bonus 6.04-6.10,0,0,0
+P2,R1,push,100004,Summer Bonus 6.04-6.10,110,1800,240
+P1,R1,push,100005,Login Rewards,80,900,200
+P2,R1,push,100005,Login Rewards,82,960,210

@@ -1,0 +1,64 @@
+# Blank attribution config — copy this, fill it in, run:
+#   python scripts/run_analysis.py --config my.yaml
+# See references/config-reference.md for every field. Logical measure names
+# (numerator/denominator/measure/factor num+den/driver) are mapped to real
+# columns per source via `column_map`, so one config works across sources with
+# different column names.
+
+period:
+  column: <period_column>            # e.g. p_date, month, cohort_week
+  prev: "<baseline period value>"
+  curr: "<comparison period value>"
+  filter_before_validate: true
+
+metric:
+  mode: ratio                        # ratio | additive
+  name: <display name>
+  # --- ratio mode ---
+  numerator: <logical>               # e.g. exposure, conversions, clicks
+  denominator: <logical>             # e.g. circle, sessions, impressions
+  direction: higher_is_better        # higher_is_better | lower_is_better (narrative labels)
+  factor_decomposition:              # OPTIONAL; omit for ratios that don't factor cleanly
+    - { name: <factorA>, num: <logical>, den: <logical> }
+    - { name: <factorB>, num: <logical>, den: <logical> }
+  # --- additive mode (delete the ratio fields above, use this instead) ---
+  # mode: additive
+  # measure: <logical>               # e.g. revenue, events, dau
+
+total_selector:                      # OPTIONAL: rows for the headline metric, if different from the partition
+  column: <dim_column>
+  equals: <rollup member, e.g. all>
+
+attribution:
+  partition_column: <dim_column>     # usually = hierarchy[0].column
+  include_members: null              # null = all; or an allow-list
+  exclude_members: []                # rollup/pseudo rows to drop
+
+hierarchy:                           # ordered drill path; one entry per level
+  - { level: <name>, column: <dim_column>, source: dedup }
+  # - { level: <name>, column: <dim_column>, source: dedup }
+  # - { level: <leaf>, column: <id_column>, label_column: <name_column>, source: pool }
+
+turnover:                            # OPTIONAL: leaf old/new classification + driver-contribution
+  driver: <logical>                  # measure used to detect on/off & ramp (often the numerator)
+  zero_eps: 0.02
+  source: pool
+
+noise:
+  min_denominator_share: 0.005       # drop rows < this share of total denominator before ranking
+  min_abs_explanation: 0.001
+  suppress_rate_near_zero: 1.0e-4    # rate≈0 rows cannot be Top-1
+
+sources:
+  dedup:                             # the de-duplicated source = denominator truth
+    path: <path-or-omit-and-pass-DataFrame>
+    grain: [<period>, <dim>, ...]    # logical (post-map) names
+    role: denominator_truth
+    aggregate_duplicates: error      # error | sum
+    column_map: { <logical>: "<real column>", ... }
+  pool:                              # OPTIONAL second source at a finer (leaf) grain
+    path: <path>
+    grain: [<period>, <dim>, <id>, ...]
+    role: direction_only             # never summed as a denominator
+    aggregate_duplicates: sum
+    column_map: { <logical>: "<real column>", ... }

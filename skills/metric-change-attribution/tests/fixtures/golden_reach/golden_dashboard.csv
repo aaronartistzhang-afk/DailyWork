@@ -1,0 +1,4 @@
+metric,prev,cur,wow
+exposure_uv,2000,1700,-0.15
+circle_uv,10000,10150,0.015
+rate,0.200000,0.167488,-0.162562

@@ -1,0 +1,64 @@
+# Worked example: 触达率 (reach rate) WoW attribution — the canonical ratio case.
+# Runnable as-is: paths point at the bundled SYNTHETIC sample dataset in examples/data/
+# (fabricated numbers — no real data). 触达率 = 资源曝光UV / 活动圈人UV = 曝光密度(曝光/交集) × 重合率(交集/圈人).
+# To run on your own data, re-point sources.*.path at fresh exports (same column_map).
+
+period:
+  column: p_date
+  prev: "P1"
+  curr: "P2"
+  filter_before_validate: true
+
+metric:
+  mode: ratio
+  name: 触达率
+  numerator: exposure          # logical names → mapped to real columns per source below
+  denominator: circle
+  direction: higher_is_better
+  factor_decomposition:        # optional; product == metric (asserted by selftest)
+    - { name: 曝光密度(质量), num: exposure,  den: intersect }
+    - { name: 重合率(结构),   num: intersect, den: circle }
+
+total_selector:                # headline 大盘 metric (≠ the attribution partition)
+  column: dim_value1
+  equals: all_resource
+
+attribution:                   # the rows that get decomposed at level 0
+  partition_column: dim_value1
+  exclude_members: [all_resource, all_banner, all_message]
+
+hierarchy:                     # ordered drill path; each level names its source
+  - { level: channel,  column: dim_value1,            source: dedup }
+  - { level: region,   column: operation_region_code, source: dedup }
+  - { level: activity, column: activity_id, label_column: activity_show_name, source: pool }
+
+turnover:                      # leaf old/new classification (+ driver-contribution at the pool leaf)
+  driver: exposure
+  zero_eps: 0.02
+  source: pool
+
+noise:
+  min_denominator_share: 0.0     # the detail channels are all legitimate → keep all in Σep
+  min_abs_explanation: 0.0
+  suppress_rate_near_zero: 1.0e-4 # rate≈0 channels cannot be Top-1
+
+sources:
+  dedup:                       # by-region source: region grain, NO activity_id, denominator truth
+    path: data/dedup_reach.csv
+    grain: [p_date, dim_value1, operation_region_code]   # logical (post-map) names
+    role: denominator_truth
+    aggregate_duplicates: error
+    column_map:
+      exposure: "资源曝光UV"
+      circle: "活动圈人UV"
+      intersect: "资源和活动圈人交集uv"
+  pool:                        # by-activity source: activity grain, different col names, double-counts
+    path: data/pool_reach.csv
+    grain: [p_date, dim_value1, activity_id, operation_region_code]
+    role: direction_only       # NEVER a denominator; leaf attributes by the driver (exposure) Δ-share
+    aggregate_duplicates: sum
+    column_map:
+      dim_value1: "资源Position"
+      exposure: "资源曝光uv"
+      circle: "活动圈人uv"
+      intersect: "资源和活动圈人交集uv"
