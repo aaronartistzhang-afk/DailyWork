@@ -14,6 +14,10 @@
 | [group-discussion-reviewer](skills/group-discussion-reviewer/) | 模拟产品组会评审一份 PRD：多评审员流水线 + 严格 P0 门禁 → 双轴结论（组内准入 / 模拟评审结果）+ P0/P1/P2。高保真可运行引擎 | Node ≥20 · zero deps | An OpenAI-compatible API key |
 | [group-discussion-reviewer-methodology](skills/group-discussion-reviewer-methodology/) | 同款评审方法论，在对话里直接评审 PRD，无需 key、无需运行代码 | Pure prompt | None |
 | [metric-change-attribution](skills/metric-change-attribution/) | 指标 WoW/MoM 变化归因：排名哪些 segment 驱动了 rate/total 变化，逐层下钻到根因（解释度/ep + factor split + turnover） | Python 3 · pandas · PyYAML | none (no Lark) |
+| [codex-review-gate](skills/codex-review-gate/) | 跨模型只读审查门禁：codex/GPT-5.5 在只读沙箱审 plan/diff/SQL/对外数字 → GO/NO-GO 循环到收敛；含「老规矩」全流程编排 | Codex CLI · pure prompt | none (no Lark) |
+| [lark-comment-loop](skills/lark-comment-loop/) | 飞书 docx 评论闭环：拉未解决评论 → 客户端按今天过滤 → 归类 → propose-first 落改 → 逐条回复 → 按模式 resolve | Lark CLI · pure prompt | `drive:file` `docx:document`（读/回复/解决评论） |
+| [audience-brief](skills/audience-brief/) | 受众分层话术打包：当前上下文发现/改动 → RD/运营/老板/local team 四档 paste-ready 飞书消息，运营·老板档过 humanizer，停在预览 | Pure prompt (+humanizer) | none (no Lark) |
+| [blind-ab-verify](skills/blind-ab-verify/) | 防污染盲测 A/B 闭环：隔离分臂子代理生成 → 去标签盲包（含对照 + do-no-harm 硬门）→ 四栏盲评 → 回灌 → 三段式 verdict + 保真度天花板 | Sub-agents (Opus) · pure prompt | none (no Lark) |
 | _(more coming)_ | | | |
 
 ---

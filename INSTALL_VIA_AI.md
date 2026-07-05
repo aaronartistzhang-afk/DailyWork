@@ -10,9 +10,9 @@
 
 Look at the user's message:
 
-- If they named a skill (e.g., `meeting-notes`, `metric-change-attribution`) → use that
+- If they named a skill (e.g., `meeting-notes`, `metric-change-attribution`, `codex-review-gate`, `lark-comment-loop`, `audience-brief`, `blind-ab-verify`) → use that
 - If they said "all" / "全部" → install all skills under `skills/`
-- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes、metric-change-attribution（更多陆续会加）。"*
+- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes、metric-change-attribution、codex-review-gate、lark-comment-loop、audience-brief、blind-ab-verify（更多陆续会加）。"*
 
 Set `SKILL_NAME` for use below.
 
