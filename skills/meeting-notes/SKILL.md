@@ -25,17 +25,22 @@ Replace the placeholder above with your actual bot app_id before using this skil
 
 ---
 
+> **Scope vs. `lark-workflow-meeting-summary`**: this skill handles **one** minute URL → polished summary → posted to a group/DM. For **time-range roll-ups across multiple meetings** (weekly/daily digest over a date range), use `lark-workflow-meeting-summary` instead.
+
 ## Activation patterns
 
-The user will say something like:
-- `总结这个会议纪要发到群 oc_xxx，<minute_url>` — run end-to-end and send
-- `总结会议纪要发之前给我 review，<minute_url>` — `dry_run = true`, preview in chat first
-- `中英双语会议纪要，<minute_url>，发到 oc_xxx` — `bilingual = true`
-- `英文版会议纪要，<minute_url>，发到 oc_xxx` — `language = "en"`, monolingual English
-- `总结发给我自己，<minute_url>` — target is user's own open_id (P2P self-send)
-- `刚那个会议纪要转成英文，发到 oc_yyy` — reuse last judgment, retranslate, resend
+**Default is dry-run.** Unless the user *explicitly* says "直接发" / "直接发到群" / "send it now" / "just send", set `dry_run = true`. (Plain "发到群" only names the *target* — it does NOT skip the preview.): render Phase 3 but do NOT send — echo the preview in chat and wait for approval. This is the safe default; a meeting summary posted to the wrong group or with a bad @ is expensive to unsend.
 
-Extract: `minute_token` (last path segment of URL), `target` (chat_id `oc_*` or open_id `ou_*`), `bilingual`, `dry_run`, `language`.
+The user will say something like:
+- `总结这个会议纪要直接发到群 oc_xxx，<minute_url>` — explicit send → `dry_run = false`, run end-to-end
+- `总结这个会议纪要发到群 oc_xxx，<minute_url>` — no "直接" qualifier → **`dry_run = true`** by default; preview first, send after user confirms
+- `总结会议纪要发之前给我 review，<minute_url>` — `dry_run = true`, preview in chat first
+- `中英双语会议纪要，<minute_url>，发到 oc_xxx` — `bilingual = true`（still dry-run first）
+- `英文版会议纪要，<minute_url>，发到 oc_xxx` — `language = "en"`, monolingual English（still dry-run first）
+- `总结发给我自己，<minute_url>` — target is user's own open_id (P2P self-send)（still dry-run first）
+- `刚那个会议纪要转成英文，发到 oc_yyy` — reuse last judgment, retranslate, resend（still dry-run first）
+
+Extract: `minute_token` (last path segment of URL), `minute_url` (the full original URL, kept verbatim), `target` (chat_id `oc_*` or open_id `ou_*`), `bilingual`, `dry_run` (**default `true`**; only `false` when the user explicitly says 直接发/直接发到群/send it now — plain 发到群 does NOT skip preview), `language`.
 
 ---
 
@@ -180,6 +185,7 @@ Read the raw JSON. Apply these judgments and write `/tmp/opus_judgment_<token>.j
 - Look for explicit ownership signals: `"我去整理 X"` / `"辛苦你做 X"` / `"X 后续 follow up"` / `"I'll take care of X"`.
 - Match owner names to attendees from Phase 1. Use their open_ids if `in_target_group=true`; otherwise null (will render as plain text).
 - ⚠️ **"是否列入 Todo" 与 "如何 @" 是两件事**：don't drop a real action item just because the owner isn't in the target group. Cross-region DA / external stakeholder / absent owners (someone on leave who got assigned by colleagues) should all appear in `todos[]`. Their `owner_open_ids` will be `null`, and the renderer will produce plain text `@<name>` instead of an `at` tag. The original people in the meeting still need to see who owns what.
+- ⚠️ **Every non-null `owner_open_id` must be validated before it renders as an `at` tag** (see Phase 3, "Validate owners before render"). A stale or external-tenant open_id that slips through renders as a broken/mis-targeted @ in the group. Owner IDs that fail validation are downgraded to plain text `@<name>`; the count of downgrades is reported in the final receipt.
 
 ### Highlight (⚠️) flag
 
@@ -201,15 +207,19 @@ When `language="en"`, use the `bullets_zh` field for English content (single lan
 
 ### Conciseness
 
-- Default: 4-7 topics, 3-7 todos, bullet sentences (not paragraphs)
+- **Hard caps (enforced): `key_topics` ≤ 4, `todos` ≤ 7.** These are ceilings, not targets — most meetings need fewer.
+- If judgment yields more than the cap, **merge like items** (fold同类项 into one topic/todo, keeping the strongest owner + a combined bullet) until at/under the cap. Never silently drop a real action item to fit the cap — merge, don't delete.
+- Track how many were merged. Surface it in the final receipt as `已合并 N 项` (see "Final output format").
+- Within caps: bullet sentences (not paragraphs).
 - User says "精炼/condense" → cut bullets ~30%
-- User says "详细/detailed" → keep more bullets
+- User says "详细/detailed" → keep more bullets (still within the hard caps)
 
 ### Schema
 
 ```jsonc
 {
   "minute_token": "...",
+  "minute_url": "https://<tenant>.larkoffice.com/minutes/<token>",
   "target_chat_id": "...",
   "target_is_p2p": true|false,
   "bilingual": true|false,
@@ -242,11 +252,24 @@ When `language="en"`, use the `bullets_zh` field for English content (single lan
 }
 ```
 
-If `dry_run=true`: render in Phase 3 but do NOT send. Output the rendered post in chat (markdown form) for user review. Wait for feedback before sending.
+If `dry_run=true` (**the default** — see "Activation patterns"): render in Phase 3 but do NOT send. Output the rendered post in chat (markdown form) for user review. Wait for feedback before sending. Only proceed to the actual send once the user confirms, or if they had explicitly said "直接发 / 直接发到群" on the first request (plain "发到群" does not count).
 
 ---
 
 ## Phase 3 — Render & Send (mechanical)
+
+### Validate owners before render (do this FIRST)
+
+Before building the post, validate **every non-null `owner_open_id`** in `todos[]`:
+
+```bash
+lark-cli contact +get-user --user-id "<OID>" --user-id-type open_id --as user
+```
+- Returns non-empty `data.user.name` → keep the `at` tag (open_id is live and resolvable).
+- Returns empty `data.user: {}` (external tenant), any error code (41050 / stale id), or a name mismatch → **downgrade**: set that `owner_open_id` to `null` so the renderer emits plain text `@<name>` instead of an `at` tag.
+- Count downgrades as `G`. Report `G` in the final receipt (`@ 降级: G 项`).
+
+Rationale: an `at` tag on a stale or cross-tenant open_id renders as a broken or mis-targeted @ in the group. Plain-text `@name` is always safe. This is cheap insurance — one call per owner, only on the (few) non-null ids.
 
 ### Build the Lark `post` message JSON via Python
 
@@ -270,6 +293,11 @@ else:
 # Header (one big md block — combining header + topics + todo header)
 # Each todo is a separate block (so @at tags work)
 # Use ━━━ separators for visual structure
+
+# Footer: link back to the original minute (last block).
+# minute_url comes from the judgment JSON (schema field `minute_url`).
+if minute_url:
+    content.append([{"tag": "a", "text": "🔗 查看原妙记", "href": minute_url}])
 
 post = {"zh_cn": {"title": title, "content": content}}
 with open(f'/tmp/meeting_post_{token}.json','w') as f:
@@ -333,10 +361,12 @@ After successful send:
 ```
 ✅ 已发送到 <chat>
 - message_id: om_xxx
-- Topics: N
-- Todos: M (含 @mention: K)
+- Topics: N（已合并 T 项）
+- Todos: M (含 @mention: K)（已合并 D 项）
+- @ 降级: G 项（外部/校验失败 → 纯文本 @name）
 - Highlights ⚠️: H
 ```
+（`已合并 …` 仅在实际发生合并时显示；`@ 降级` 仅在 G>0 时显示。）
 
 If dry_run, show the rendered preview as markdown in chat and ask: `"OK 的话我就发，需要改的地方告诉我。"`
 
