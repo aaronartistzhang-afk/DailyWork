@@ -32,10 +32,18 @@ Validate required fields: `title`, `time`, `duration_min`, `attendees_display`, 
 
 Build via Python (avoid shell escape hell):
 
+> **Precondition (owner validation).** Before this step, validate every non-null `owner_open_id` in `todos[]`:
+> ```bash
+> lark-cli contact +get-user --user-id "<OID>" --user-id-type open_id --as user
+> ```
+> Empty `data.user: {}` (external tenant) / any error code / name mismatch → set that `owner_open_id` to `null` (downgrade to plain-text `@name`). Count the downgrades as `G` and report it in Step 5. Only validated, non-null oids reach the `at()` helper below.
+
 ```python
 import json
 
 def at(name, oid):
+    # oid here is already validated in the precondition above; a null oid
+    # means "downgraded to plain text" (external / stale / unresolved).
     if oid:
         return {"tag": "at", "user_id": oid, "user_name": name}
     return {"tag": "text", "text": f"@{name}"}
@@ -132,6 +140,11 @@ for todo in todos:
     if bilingual and todo.get('text_en'):
         content.append([{"tag": "text", "text": f"   {todo['text_en']}"}])
 
+# Footer: link back to the original minute (from judgment field `minute_url`).
+minute_url = j.get('minute_url')
+if minute_url:
+    content.append([{"tag": "a", "text": "🔗 查看原妙记", "href": minute_url}])
+
 post = {"zh_cn": {"title": title_str, "content": content}}
 
 with open(f'/tmp/meeting_post_{token}.json', 'w') as f:
@@ -179,7 +192,7 @@ Success:
 - Sent to: <chat_or_user_id>
 - message_id: <id>
 - Topics: <N>
-- Todos: <M> (with @mentions: <K>)
+- Todos: <M> (with @mentions: <K>, downgraded to plain @name: <G>)
 ```
 
 Dry run:

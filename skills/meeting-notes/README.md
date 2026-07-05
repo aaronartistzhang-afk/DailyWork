@@ -19,6 +19,16 @@ Given a Lark/Feishu meeting minute URL and a target (group `oc_xxx` or user open
 
 ---
 
+## Defaults & guardrails
+
+Three defaults keep output tight and safe:
+
+1. **Dry-run first (default).** A request is previewed in chat before anything is sent. The skill only sends immediately when you explicitly say "直接发" / "直接发到群" / "send it now" (plain "发到群" just names the target and still previews first). Everything else renders a preview and waits for your OK. This prevents wrong-group / bad-@ sends.
+2. **Hard caps: ≤ 4 topics, ≤ 7 todos.** Beyond the cap, the skill **merges like items** (never silently drops a real action item) and notes `已合并 N 项` in the receipt.
+3. **@-mention validation before send.** Every owner open_id is checked via `contact +get-user` before it renders as an `at` tag. External-tenant / stale / mismatched ids are **downgraded to plain-text `@name`**, and the receipt reports `@ 降级: G 项`. Broken/mis-targeted @s never reach the group.
+
+---
+
 ## When to use
 
 - After any 15min+ meeting where you'd otherwise have to manually summarize
