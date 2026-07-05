@@ -17,10 +17,11 @@ Look at the user's message:
 Set `SKILL_NAME` for use below.
 
 **Skill class** — this determines which steps apply:
-- **Lark skills** (e.g. `meeting-notes`) — need `lark-cli` + a bot `BOT_APP_ID` + Lark scopes. All steps apply.
+- **Lark skills** (e.g. `meeting-notes`, `lark-comment-loop`) — need `lark-cli`. `meeting-notes` additionally needs a bot `BOT_APP_ID` + Lark scopes (all steps apply). `lark-comment-loop` only needs a working `lark-cli` login with doc-comment read/reply scopes — **skip Steps 5 and 5.5** (no BOT_APP_ID).
 - **Python-only skills** (e.g. `metric-change-attribution`) — pure Python, **no Lark / bot / scopes**. Need `python3` + `pandas` + `pyyaml`. **Skip Steps 5 and 5.5 entirely** (no BOT_APP_ID, no scope probe); use the Python branches in Steps 1 and 6.
+- **Prompt-only skills** (`codex-review-gate`, `audience-brief`, `blind-ab-verify`) — plain SKILL.md instructions, **no runtime dependencies** (`codex-review-gate` assumes some second-model CLI like `codex` exists, but installs fine without it). Install = copy the skill folder into `~/.claude/skills/`. **Skip Steps 1, 5, 5.5 and 6** — nothing to probe or self-test.
 
-Set `SKILL_CLASS` = `lark` or `python` accordingly.
+Set `SKILL_CLASS` = `lark`, `python`, or `prompt` accordingly.
 
 ## Step 1 — Check prerequisites
 

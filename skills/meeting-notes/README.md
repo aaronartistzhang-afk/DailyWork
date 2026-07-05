@@ -49,7 +49,8 @@ After pasting `SKILL.md` into your AI agent, just send a natural-language messag
 Variations:
 | Trigger | Behavior |
 |---|---|
-| `总结发到群 oc_xxx, <url>` | Run end-to-end, send directly |
+| `总结发到群 oc_xxx, <url>` | Renders a preview first (dry-run default), sends after you approve |
+| `总结直接发到群 oc_xxx, <url>` | Explicit "直接发" → run end-to-end, send immediately |
 | `总结发之前给我 review, <url>` | Render a preview in chat first; you approve before send |
 | `中英双语会议纪要, <url>, 发到 oc_xxx` | Bilingual mode (EN + CN side-by-side) |
 | `英文版, <url>, 发到 oc_xxx` | English-only mode |

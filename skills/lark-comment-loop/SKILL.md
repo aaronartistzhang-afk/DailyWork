@@ -110,7 +110,7 @@ lark-cli drive file.comments patch \
   「本轮（今日范围）已闭环 N 条；**全文档仍 open M 条**（含历史评论，未在本轮范围内）」。
   ⚠ 禁止只凭今日范围清零就宣称 open=0——今日过滤 ≠ 全文档。
 - `resolve` 模式：附本轮改动清单；`reply-only` 模式：附已回复条数 + 未 resolve 说明（交对方处理）。
-- 大改另立新版本的，回写新文档 token 到项目 memory。
+- 大改另立新版本的，在收尾回执中给出新文档链接；**不主动把文档 token 持久化到 memory/文件**（token 属敏感引用，仅当用户明确要求记住时才落）。
 
 ## 分工声明
 - 正文/表格落改机制 → `~/.claude/skills/writing-prds/lark-editing.md`（不重复）。
