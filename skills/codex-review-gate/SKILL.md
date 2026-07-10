@@ -1,7 +1,7 @@
 ---
 name: codex-review-gate
 description: >-
-  跨模型只读审查门禁 —— 用 codex（GPT-5.5, xhigh reasoning）在只读沙箱里审查方案 / diff /
+  跨模型只读审查门禁 —— 用 codex（GPT-5.6 Sol, xhigh reasoning）在只读沙箱里审查方案 / diff /
   SQL / 对外数字，提取 GO/NO-GO 裁决并循环到收敛，以及编排「老规矩」全流程
   （Fable 出 plan → plan 门禁 → Opus 子代理落地 → diff 门禁 → 测试）。
   当用户说「老规矩」「让 codex review 一下」「上集群前记得审查这个 SQL」「这些数字对外前复算一下」
@@ -13,12 +13,12 @@ compatibility: >
   仅限 Claude Code 环境。lark-cli 可选（升级失败告警走 DM 时用）。
 metadata:
   domain: workflow-orchestration
-  models: {reviewer: gpt-5.5, drafter: fable, implementer: opus}
+  models: {reviewer: gpt-5.6-sol, drafter: fable, implementer: opus}
 ---
 
 # codex-review-gate（跨模型只读审查门禁）
 
-把日常口头的「老规矩」固化成一道可复用的关卡：**每个高风险节点交给另一个模型（codex / GPT-5.5）在只读沙箱里独立审一遍，拿到明确的 GO / NO-GO，NO-GO 就修完重审，循环到收敛。** 审查者永远不写盘、不执行、不 commit —— 门禁本身必须无副作用。
+把日常口头的「老规矩」固化成一道可复用的关卡：**每个高风险节点交给另一个模型（codex / GPT-5.6 Sol）在只读沙箱里独立审一遍，拿到明确的 GO / NO-GO，NO-GO 就修完重审，循环到收敛。** 审查者永远不写盘、不执行、不 commit —— 门禁本身必须无副作用。
 
 **四种门禁模式**（`plan` / `diff` / `sql` / `numbers`）可单独调用，也可由**全流程模式**（老规矩）串起来。
 
@@ -37,14 +37,14 @@ metadata:
 
 ```bash
 codex exec - --sandbox read-only \
-  -c model=gpt-5.5 \
+  -c model=gpt-5.6-sol \
   -c model_reasoning_effort=xhigh \
   --skip-git-repo-check
 ```
 
 - `-` ：从 stdin 读 prompt / 审阅物（把方案全文、diff、SQL、数字清单 + 审查指令一起管道喂入）。
 - **`--sandbox read-only` 显式锁死**：exec 默认即 read-only + approval never，但仍显式加锁 —— 防版本漂移或 prompt 里出现「顺手改一下」被误当可写执行。门禁的铁律是**零副作用**：不写盘、不执行变更、不 commit。
-- `-c model=gpt-5.5` + `-c model_reasoning_effort=xhigh`：跨模型（对 Claude 的盲点互补）+ 最高推理档（审查值得慢）。
+- `-c model=gpt-5.6-sol` + `-c model_reasoning_effort=xhigh`：跨模型（对 Claude 的盲点互补）+ 最高推理档（审查值得慢）。
 - `--skip-git-repo-check`：审阅物常从 stdin 来，不依赖当前目录是 git 仓库。
 - **一律后台运行**：xhigh 审长文档 / 大 diff 常 >10 分钟，前台必超时。用后台任务跑，轮询结果，别阻塞主会话。
 - **失败 / 超时自动重试 1 次**：第一次非零退出或超时 → 原样重投一次；再失败 → **停下报告用户**（附 stderr 摘要），不要静默降级、不要假装 GO。
@@ -117,13 +117,13 @@ codex exec - --sandbox read-only \
 | 阶段 | 谁做 | 做什么 |
 |---|---|---|
 | 1. 出方案 | **Fable**（主会话起草） | 产出实现 plan（可先走 `writing-plans` 定结构） |
-| 2. **plan 门禁** | **codex / GPT-5.5** | `plan` 模式审方案 → GO/NO-GO 循环至 GO |
+| 2. **plan 门禁** | **codex / GPT-5.6 Sol** | `plan` 模式审方案 → GO/NO-GO 循环至 GO |
 | 3. 落地 | **Opus 子代理** | 按已 GO 的 plan 实现，接 `superpowers` 纪律：`writing-plans`（若还没成文）→ `subagent-driven-development` 拆任务 → `test-driven-development` 先测后码 |
-| 4. **diff 门禁** | **codex / GPT-5.5** | `diff` 模式审实现 → GO 才 commit |
+| 4. **diff 门禁** | **codex / GPT-5.6 Sol** | `diff` 模式审实现 → GO 才 commit |
 | 5. 测试 | Opus / 主会话 | 跑测试 + `verification-before-completion`，证据齐了才算完 |
 
 要点：
-- **模型分工不可含糊**：Fable 起草、GPT-5.5 审查、Opus 落地 —— 跨模型互补盲点是整条链的价值来源。
+- **模型分工不可含糊**：Fable 起草、GPT-5.6 Sol 审查、Opus 落地 —— 跨模型互补盲点是整条链的价值来源。
 - 每道门禁都走上面的 GO/NO-GO 协议与 3 轮升级规则。
 - 若 plan 里含 SQL 或对外数字，在对应节点顺带插 `sql` / `numbers` 门禁。
 - 全程 codex 只读、后台跑、失败重试 1 次。
