@@ -18,6 +18,7 @@
 | [lark-comment-loop](skills/lark-comment-loop/) | 飞书 docx 评论闭环：拉未解决评论 → 客户端按今天过滤 → 归类 → propose-first 落改 → 逐条回复 → 按模式 resolve | Lark CLI · pure prompt | `drive:file` `docx:document`（读/回复/解决评论） |
 | [audience-brief](skills/audience-brief/) | 受众分层话术打包：当前上下文发现/改动 → RD/运营/老板/local team 四档 paste-ready 飞书消息，运营·老板档过 humanizer，停在预览 | Pure prompt (+humanizer) | none (no Lark) |
 | [blind-ab-verify](skills/blind-ab-verify/) | 防污染盲测 A/B 闭环：隔离分臂子代理生成 → 去标签盲包（含对照 + do-no-harm 硬门）→ 四栏盲评 → 回灌 → 三段式 verdict + 保真度天花板 | Sub-agents (Opus) · pure prompt | none (no Lark) |
+| [lark-peer-feedback-drafting](skills/lark-peer-feedback-drafting/) | Evidence-based peer-feedback **drafting** for a formal evaluator: authorization gate → tiered retrieval (scoped/expanded/custom, budget + "what you'll miss") → private evidence ledger → fact-based draft → human sets rating, finalizes & submits. Privacy-first, own-identity-only, no auto-scan | Lark CLI · sub-agents · pure prompt | own-user read only: `im:message` `im:chat` (chat-membership read) `contact:user.base:readonly` — no bot/admin/write |
 | _(more coming)_ | | | |
 
 ---

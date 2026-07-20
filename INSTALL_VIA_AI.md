@@ -10,14 +10,14 @@
 
 Look at the user's message:
 
-- If they named a skill (e.g., `meeting-notes`, `metric-change-attribution`, `codex-review-gate`, `lark-comment-loop`, `audience-brief`, `blind-ab-verify`) → use that
+- If they named a skill (e.g., `meeting-notes`, `metric-change-attribution`, `codex-review-gate`, `lark-comment-loop`, `audience-brief`, `blind-ab-verify`, `lark-peer-feedback-drafting`) → use that
 - If they said "all" / "全部" → install all skills under `skills/`
-- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes、metric-change-attribution、codex-review-gate、lark-comment-loop、audience-brief、blind-ab-verify（更多陆续会加）。"*
+- If unclear → ask: *"想装哪个 skill？目前可选：meeting-notes、metric-change-attribution、codex-review-gate、lark-comment-loop、audience-brief、blind-ab-verify、lark-peer-feedback-drafting（更多陆续会加）。"*
 
 Set `SKILL_NAME` for use below.
 
 **Skill class** — this determines which steps apply:
-- **Lark skills** (e.g. `meeting-notes`, `lark-comment-loop`) — need `lark-cli`. `meeting-notes` additionally needs a bot `BOT_APP_ID` + Lark scopes (all steps apply). `lark-comment-loop` only needs a working `lark-cli` login with doc-comment read/reply scopes — **skip Steps 5 and 5.5** (no BOT_APP_ID).
+- **Lark skills** (e.g. `meeting-notes`, `lark-comment-loop`, `lark-peer-feedback-drafting`) — need `lark-cli`. `meeting-notes` additionally needs a bot `BOT_APP_ID` + Lark scopes (all steps apply). `lark-comment-loop` only needs a working `lark-cli` login with doc-comment read/reply scopes — **skip Steps 5 and 5.5** (no BOT_APP_ID). `lark-peer-feedback-drafting` runs entirely under **your own user identity** (`--as user`, no bot ever) — it only needs a `lark-cli` login with the read scopes to see the messages you can already see (`im:message` / `im:chat` chat-membership read / `contact:user.base:readonly`) — **skip Steps 5 and 5.5** (no BOT_APP_ID).
 - **Python-only skills** (e.g. `metric-change-attribution`) — pure Python, **no Lark / bot / scopes**. Need `python3` + `pandas` + `pyyaml`. **Skip Steps 5 and 5.5 entirely** (no BOT_APP_ID, no scope probe); use the Python branches in Steps 1 and 6.
 - **Prompt-only skills** (`codex-review-gate`, `audience-brief`, `blind-ab-verify`) — plain SKILL.md instructions, **no runtime dependencies** (`codex-review-gate` assumes some second-model CLI like `codex` exists, but installs fine without it). Install = copy the skill folder into `~/.claude/skills/`. **Skip Steps 1, 5, 5.5 and 6** — nothing to probe or self-test.
 
