@@ -3,6 +3,25 @@ import assert from "node:assert/strict";
 
 import { buildReviewerPrompt } from "../src/reviewerPrompt.mjs";
 
+// Regression guard: the reviewer prompt is built from calibration notes taken
+// off real review sessions. It must come out generic — no reviewer identity,
+// no source-PRD titles, no internal codenames carried through.
+//
+// The blocklist deliberately does not live in this repo: writing the very
+// strings you are scrubbing into a public file defeats the scrub. Point
+// REVIEW_PROMPT_BLOCKLIST at a pipe-separated regex to enforce it locally or
+// in a private CI run.
+//
+//   REVIEW_PROMPT_BLOCKLIST='SomeName|SOME-CODENAME' npm test
+//
+// The positive assertions below carry the rest of the weight: they check the
+// prompt states the calibration lessons in their generalized form.
+function assertNoCalibrationLeak(prompt) {
+  const blocklist = process.env.REVIEW_PROMPT_BLOCKLIST;
+  if (!blocklist) return;
+  assert.doesNotMatch(prompt, new RegExp(blocklist, "i"));
+}
+
 test("reviewer prompt is generic and does not expose personal profile labels", () => {
   const prompt = buildReviewerPrompt({
     prdContent: "This PRD changes an activity banner ranking rule.",
@@ -12,7 +31,7 @@ test("reviewer prompt is generic and does not expose personal profile labels", (
 
   assert.match(prompt, /senior product review simulator/);
   assert.match(prompt, /Ask questions only/);
-  assert.doesNotMatch(prompt, /__redacted__/);
+  assertNoCalibrationLeak(prompt);
 });
 
 test("reviewer prompt defaults to Chinese output", () => {
@@ -115,7 +134,7 @@ test("reviewer prompt includes latest group calibration without personal labels"
   assert.match(prompt, /same score should require comparable effort/);
   assert.match(prompt, /protected population, whitelist\/allowlist boundary/);
   assert.match(prompt, /which alerts are must-answer and which should be merged/);
-  assert.doesNotMatch(prompt, /__redacted__/);
+  assertNoCalibrationLeak(prompt);
 });
 
 test("reviewer prompt adjudicates user feedback during regeneration", () => {
