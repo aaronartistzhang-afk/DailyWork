@@ -8,40 +8,55 @@
 
 ## 🧰 Skill Catalog
 
+### Works anywhere — no Lark, no bot
+
+These need only an AI agent (and Python or Node where noted). Start here.
+
+| Skill | What it does | Stack | Needs |
+|---|---|---|---|
+| [metric-change-attribution](skills/metric-change-attribution/) | Attribute a WoW/MoM metric move: rank which segments drove the change in a rate or a total, then drill layer by layer to root cause — explained-share, factor split, turnover, noise flagging | Python 3 · pandas · PyYAML | — |
+| [group-discussion-reviewer](skills/group-discussion-reviewer/) | Run a simulated product review panel over a PRD: multi-reviewer pipeline behind a strict P0 gate → two-axis verdict (does it clear the bar / what the panel would say) + ranked P0/P1/P2 issues. Real runnable engine, not a prompt | Node ≥20 · zero deps | An OpenAI-compatible API key |
+| [group-discussion-reviewer-methodology](skills/group-discussion-reviewer-methodology/) | The same review methodology applied conversationally — review a PRD in chat, no key, nothing to run | Pure prompt | — |
+| [codex-review-gate](skills/codex-review-gate/) | Cross-model read-only review gate: a second model reviews your plan / diff / SQL / outbound numbers in a read-only sandbox and returns GO/NO-GO, looped until it converges | Codex CLI · pure prompt | — |
+| [audience-brief](skills/audience-brief/) | Repackage a finding or a change into paste-ready messages for four audiences — engineering, ops, leadership, local team — each at the right register and evidence density. Stops at a preview; you send | Pure prompt (+humanizer) | — |
+| [blind-ab-verify](skills/blind-ab-verify/) | Contamination-proof A/B for prompt changes: isolated per-arm generation → de-labelled blind packet (with control arm + do-no-harm gate) → four-column blind scoring → three-part verdict, with an explicit fidelity ceiling | Sub-agents · pure prompt | — |
+
+### Lark / Feishu required
+
+These drive Lark docs, chats and meetings through [`lark-cli`](https://github.com/larksuite/cli), so they need a Lark tenant and a bot app.
+
 | Skill | What it does | Stack | Required scopes |
 |---|---|---|---|
-| [meeting-notes](skills/meeting-notes/) | 飞书妙记 URL → 精炼会议纪要 + 自动 @ 责任人 → 发到群/DM | Lark CLI · Sonnet+Opus hybrid | `vc:meeting:read` `vc:minute:read` `contact:user:readonly` `im:message.send_as_app` `im:chat.members` |
-| [group-discussion-reviewer](skills/group-discussion-reviewer/) | 模拟产品组会评审一份 PRD：多评审员流水线 + 严格 P0 门禁 → 双轴结论（组内准入 / 模拟评审结果）+ P0/P1/P2。高保真可运行引擎 | Node ≥20 · zero deps | An OpenAI-compatible API key |
-| [group-discussion-reviewer-methodology](skills/group-discussion-reviewer-methodology/) | 同款评审方法论，在对话里直接评审 PRD，无需 key、无需运行代码 | Pure prompt | None |
-| [metric-change-attribution](skills/metric-change-attribution/) | 指标 WoW/MoM 变化归因：排名哪些 segment 驱动了 rate/total 变化，逐层下钻到根因（解释度/ep + factor split + turnover） | Python 3 · pandas · PyYAML | none (no Lark) |
-| [codex-review-gate](skills/codex-review-gate/) | 跨模型只读审查门禁：codex/GPT-5.5 在只读沙箱审 plan/diff/SQL/对外数字 → GO/NO-GO 循环到收敛；含「老规矩」全流程编排 | Codex CLI · pure prompt | none (no Lark) |
-| [lark-comment-loop](skills/lark-comment-loop/) | 飞书 docx 评论闭环：拉未解决评论 → 客户端按今天过滤 → 归类 → propose-first 落改 → 逐条回复 → 按模式 resolve | Lark CLI · pure prompt | `drive:file` `docx:document`（读/回复/解决评论） |
-| [audience-brief](skills/audience-brief/) | 受众分层话术打包：当前上下文发现/改动 → RD/运营/老板/local team 四档 paste-ready 飞书消息，运营·老板档过 humanizer，停在预览 | Pure prompt (+humanizer) | none (no Lark) |
-| [blind-ab-verify](skills/blind-ab-verify/) | 防污染盲测 A/B 闭环：隔离分臂子代理生成 → 去标签盲包（含对照 + do-no-harm 硬门）→ 四栏盲评 → 回灌 → 三段式 verdict + 保真度天花板 | Sub-agents (Opus) · pure prompt | none (no Lark) |
-| [lark-peer-feedback-drafting](skills/lark-peer-feedback-drafting/) | Evidence-based peer-feedback **drafting** for a formal evaluator: authorization gate → tiered retrieval (scoped/expanded/custom, budget + "what you'll miss") → private evidence ledger → fact-based draft → human sets rating, finalizes & submits. Privacy-first, own-identity-only, no auto-scan | Lark CLI · sub-agents · pure prompt | own-user read only: `im:message` `im:chat` (chat-membership read) `contact:user.base:readonly` — no bot/admin/write |
-| _(more coming)_ | | | |
+| [meeting-notes](skills/meeting-notes/) | Lark Minutes URL → condensed meeting notes with owners auto-@'d → posted to a group or DM. Chinese, English or bilingual output | Lark CLI · Sonnet+Opus hybrid | `vc:meeting:read` `vc:minute:read` `contact:user:readonly` `im:message.send_as_app` `im:chat.members` |
+| [lark-comment-loop](skills/lark-comment-loop/) | Close the loop on unresolved docx comments: pull → filter to today client-side → classify → propose-first edits → reply to each → resolve according to mode | Lark CLI · pure prompt | `drive:file` `docx:document` (read / reply / resolve comments) |
+| [lark-peer-feedback-drafting](skills/lark-peer-feedback-drafting/) | Evidence-based peer-feedback **drafting** for a formal evaluator: authorization gate → tiered retrieval (scoped/expanded/custom, with budget + "what you'll miss") → private evidence ledger → fact-based draft → human sets the rating, finalizes and submits. Privacy-first, own-identity-only, no auto-scan | Lark CLI · sub-agents · pure prompt | own-user read only: `im:message` `im:chat` (chat-membership read) `contact:user.base:readonly` — no bot/admin/write |
+
+> Several skills were built against Chinese-language workflows and will answer in Chinese when you write to them in Chinese. All of them work in English too.
 
 ---
 
 ## 🚀 Install
 
-### Prerequisites (one-time, ~10 min)
+### Prerequisites
 
-> **Python-only skills** (e.g. [`metric-change-attribution`](skills/metric-change-attribution/)) skip steps 1–2 entirely — no Lark, no bot. They just need **Python 3** + `pip install pandas pyyaml`, plus an AI agent (step 3). The Lark prerequisites below apply only to the Lark-backed skills.
+**For every skill:** an AI agent that can run shell commands — Claude Code, Codex CLI, Cursor, etc.
+
+**That's it for the six skills in the first table.** Some also want Python 3 (`pip install pandas pyyaml`) or Node ≥ 20 — the catalog says which.
+
+**Only for the Lark skills** (one-time, ~10 min):
 
 1. **`lark-cli`** installed and authenticated — see [shared/lark-cli-setup.md](shared/lark-cli-setup.md). Verify:
    ```bash
    lark-cli config show     # should show your appId
    ```
 2. **Lark Custom App (bot)** with the scopes your chosen skills need — see [shared/bot-app-id.md](shared/bot-app-id.md). Note the app_id (`cli_xxxxxxxxxxxx`).
-3. **An AI agent that can run shell commands** — Claude Code, Codex CLI, Cursor, etc.
 
 ### Recommended: one-message install
 
 Open your AI agent and paste:
 
 ```
-请按 https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md 装上 meeting-notes skill
+Follow https://github.com/aaronartistzhang-afk/DailyWork/blob/main/INSTALL_VIA_AI.md and install the metric-change-attribution skill
 ```
 
 The AI will:
@@ -55,10 +70,10 @@ The AI will:
 
 After install, in any new session, just say:
 ```
-总结发给我自己 dry-run, <some Lark meeting URL>
+Reach rate dropped week over week — attribute it. Config: examples/reach-rate.config.yaml
 ```
 
-To install other skills, replace `meeting-notes` with the skill name.
+To install a different skill, swap `metric-change-attribution` for its name. For a Lark skill such as `meeting-notes`, the install flow will also detect your `BOT_APP_ID` and check the bot's scopes.
 
 ### Supported AI agents
 
@@ -69,6 +84,8 @@ To install other skills, replace `meeting-notes` with the skill name.
 | **Cursor / Continue / GPT custom action / others** | Paste SKILL.md content into AI's system prompt manually | Manual paste per session |
 
 ### Manual install — Claude Code
+
+> The examples below use `meeting-notes`; substitute any skill name. The final `<BOT_APP_ID>` edit applies **only to the Lark skills** — the six in the first table have no placeholder to fill.
 
 ```bash
 git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
@@ -98,7 +115,7 @@ cd ~/DailyWork && git pull
 ```
 
 - **Claude Code**: symlinks auto-update. Done.
-- **Codex / others**: re-install (or just say "重装 meeting-notes" to your AI).
+- **Codex / others**: re-install (or just tell your AI "reinstall the `<skill-name>` skill").
 
 ### Common errors
 
