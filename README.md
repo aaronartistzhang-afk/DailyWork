@@ -20,6 +20,8 @@ These need only an AI agent (and Python or Node where noted). Start here.
 | [codex-review-gate](skills/codex-review-gate/) | Cross-model read-only review gate: a second model reviews your plan / diff / SQL / outbound numbers in a read-only sandbox and returns GO/NO-GO, looped until it converges | Codex CLI · pure prompt | — |
 | [audience-brief](skills/audience-brief/) | Repackage a finding or a change into paste-ready messages for four audiences — engineering, ops, leadership, local team — each at the right register and evidence density. Stops at a preview; you send | Pure prompt (+humanizer) | — |
 | [blind-ab-verify](skills/blind-ab-verify/) | Contamination-proof A/B for prompt changes: isolated per-arm generation → de-labelled blind packet (with control arm + do-no-harm gate) → four-column blind scoring → three-part verdict, with an explicit fidelity ceiling | Sub-agents · pure prompt | — |
+| [change-triage](skills/change-triage/) | A "is it worth doing?" decision table: force each candidate change into a seven-column table whose first column is the concrete harm of *not* doing it → do now / backlog / skip, and the human decides. Decision triage, cost-benefit, backlog prioritization | Pure prompt | — |
+| [session-handoff](skills/session-handoff/) | Hand work between AI coding sessions on one machine: a fixed three-line header (state / do this / decide this) + a six-section `HANDOFF.md` so the receiver sees "fixed or not fixed?" at a glance; git state forced into the header | Pure prompt | — |
 
 ### Lark / Feishu required
 
@@ -41,7 +43,7 @@ These drive Lark docs, chats and meetings through [`lark-cli`](https://github.co
 
 **For every skill:** an AI agent that can run shell commands — Claude Code, Codex CLI, Cursor, etc.
 
-**That's it for the six skills in the first table.** Some also want Python 3 (`pip install pandas pyyaml`) or Node ≥ 20 — the catalog says which.
+**That's it for the eight skills in the first table.** Some also want Python 3 (`pip install pandas pyyaml`) or Node ≥ 20 — the catalog says which.
 
 **Only for the Lark skills** (one-time, ~10 min):
 
@@ -85,7 +87,7 @@ To install a different skill, swap `metric-change-attribution` for its name. For
 
 ### Manual install — Claude Code
 
-> The examples below use `meeting-notes`; substitute any skill name. The final `<BOT_APP_ID>` edit applies **only to the Lark skills** — the six in the first table have no placeholder to fill.
+> The examples below use `meeting-notes`; substitute any skill name. The final `<BOT_APP_ID>` edit applies **only to the Lark skills** — the eight in the first table have no placeholder to fill.
 
 ```bash
 git clone https://github.com/aaronartistzhang-afk/DailyWork.git ~/DailyWork
