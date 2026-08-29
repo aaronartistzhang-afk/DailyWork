@@ -20,6 +20,7 @@ a blind-packet artifact.** Who's the new version stays secret to the judge until
 - A prompt / skill change landed and you want to judge old-vs-new without variant-label contamination.
 - Two one-line copy variants that need a blind pick.
 - You suspect a prior "new version is better" was your own confirmation bias and want a clean re-check.
+- **Mode B (single-version blind repro)**: you want to verify a *packaged* skill runs end-to-end in a clean environment for a reproducer with no context — output is a **defect list** ("where the SKILL.md is unclear, which step stuck"), not a pass rate. See the 模式 B section in `SKILL.md`.
 
 **Not for**: adversarial pre-work design/review (that's a debate or a review-gate — those are
 "shift-left", before the change); a single-shot subjective compare with no control; a real-traffic
